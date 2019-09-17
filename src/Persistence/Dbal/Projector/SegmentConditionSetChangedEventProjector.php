@@ -15,13 +15,11 @@ use Ergonode\Core\Domain\Entity\AbstractId;
 use Ergonode\EventSourcing\Infrastructure\DomainEventInterface;
 use Ergonode\EventSourcing\Infrastructure\Exception\UnsupportedEventException;
 use Ergonode\EventSourcing\Infrastructure\Projector\DomainEventProjectorInterface;
-use Ergonode\Segment\Domain\Event\SegmentCreatedEvent;
-use Ergonode\Segment\Domain\ValueObject\SegmentStatus;
-use JMS\Serializer\SerializerInterface;
+use Ergonode\Segment\Domain\Event\SegmentConditionSetChangedEvent;
 
 /**
  */
-class SegmentCreatedEventProjector implements DomainEventProjectorInterface
+class SegmentConditionSetChangedEventProjector implements DomainEventProjectorInterface
 {
     private const TABLE = 'segment';
 
@@ -31,18 +29,11 @@ class SegmentCreatedEventProjector implements DomainEventProjectorInterface
     private $connection;
 
     /**
-     * @var SerializerInterface
+     * @param Connection $connection
      */
-    private $serializer;
-
-    /**
-     * @param Connection          $connection
-     * @param SerializerInterface $serializer
-     */
-    public function __construct(Connection $connection, SerializerInterface $serializer)
+    public function __construct(Connection $connection)
     {
         $this->connection = $connection;
-        $this->serializer = $serializer;
     }
 
     /**
@@ -52,7 +43,7 @@ class SegmentCreatedEventProjector implements DomainEventProjectorInterface
      */
     public function support(DomainEventInterface $event): bool
     {
-        return $event instanceof SegmentCreatedEvent;
+        return $event instanceof SegmentConditionSetChangedEvent;
     }
 
     /**
@@ -64,19 +55,17 @@ class SegmentCreatedEventProjector implements DomainEventProjectorInterface
      */
     public function projection(AbstractId $aggregateId, DomainEventInterface $event): void
     {
-        if (!$event instanceof SegmentCreatedEvent) {
-            throw new UnsupportedEventException($event, SegmentCreatedEvent::class);
+        if (!$this->support($event)) {
+            throw new UnsupportedEventException($event, SegmentConditionSetChangedEvent::class);
         }
 
-        $this->connection->insert(
+        $this->connection->update(
             self::TABLE,
             [
-                'id' => $event->getId()->getValue(),
-                'code' => $event->getCode(),
-                'name' => $this->serializer->serialize($event->getName(), 'json'),
-                'description' => $this->serializer->serialize($event->getDescription(), 'json'),
-                'status' => SegmentStatus::NEW,
-                'condition_set_id' => $event->getConditionSetId()->getValue(),
+                'condition_set_id' => $event->getTo()->getValue(),
+            ],
+            [
+                'id' => $aggregateId->getValue(),
             ]
         );
     }
