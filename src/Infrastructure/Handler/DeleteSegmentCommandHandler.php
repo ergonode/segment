@@ -9,13 +9,13 @@ declare(strict_types = 1);
 
 namespace Ergonode\Segment\Infrastructure\Handler;
 
-use Ergonode\Segment\Domain\Command\CreateSegmentCommand;
-use Ergonode\Segment\Domain\Entity\Segment;
+use Ergonode\Segment\Domain\Command\DeleteSegmentCommand;
 use Ergonode\Segment\Domain\Repository\SegmentRepositoryInterface;
+use Webmozart\Assert\Assert;
 
 /**
  */
-class CreateSegmentCommandHandler
+class DeleteSegmentCommandHandler
 {
     /**
      * @var SegmentRepositoryInterface
@@ -31,20 +31,15 @@ class CreateSegmentCommandHandler
     }
 
     /**
-     * @param CreateSegmentCommand $command
+     * @param DeleteSegmentCommand $command
      *
      * @throws \Exception
      */
-    public function __invoke(CreateSegmentCommand $command)
+    public function __invoke(DeleteSegmentCommand $command)
     {
-        $segment = new Segment(
-            $command->getId(),
-            $command->getCode(),
-            $command->getConditionSetId(),
-            $command->getName(),
-            $command->getDescription()
-        );
+        $conditionSet = $this->repository->load($command->getId());
+        Assert::notNull($conditionSet);
 
-        $this->repository->save($segment);
+        $this->repository->delete($conditionSet);
     }
 }
