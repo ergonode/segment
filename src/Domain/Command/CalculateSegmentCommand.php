@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Copyright © Bold Brand Commerce Sp. z o.o. All rights reserved.
  * See LICENSE.txt for license details.
@@ -9,33 +8,34 @@ declare(strict_types = 1);
 
 namespace Ergonode\Segment\Domain\Command;
 
-use Ergonode\EventSourcing\Infrastructure\DomainCommandInterface;
 use Ergonode\Segment\Domain\Entity\SegmentId;
+use JMS\Serializer\Annotation as JMS;
+use Ergonode\EventSourcing\Infrastructure\DomainCommandInterface;
 
 /**
  */
-class DeleteSegmentCommand implements DomainCommandInterface
+class CalculateSegmentCommand implements DomainCommandInterface
 {
     /**
      * @var SegmentId
      *
      * @JMS\Type("Ergonode\Segment\Domain\Entity\SegmentId")
      */
-    private SegmentId $id;
+    private SegmentId $segmentId;
 
     /**
-     * @param SegmentId $id
+     * @param SegmentId $segmentId
      */
-    public function __construct(SegmentId $id)
+    public function __construct(SegmentId $segmentId)
     {
-        $this->id = $id;
+        $this->segmentId = $segmentId;
     }
 
     /**
      * @return SegmentId
      */
-    public function getId(): SegmentId
+    public function getSegmentId(): SegmentId
     {
-        return $this->id;
+        return $this->segmentId;
     }
 }
