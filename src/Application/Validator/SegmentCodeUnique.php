@@ -7,14 +7,14 @@
 
 declare(strict_types=1);
 
-namespace Ergonode\Segment\Infrastructure\Validator;
+namespace Ergonode\Segment\Application\Validator;
 
 use Symfony\Component\Validator\Constraint;
 
 /**
  * @Annotation
  */
-class UniqueSegmentCode extends Constraint
+class SegmentCodeUnique extends Constraint
 {
     public string $uniqueMessage = 'Given value is not unique';
 }
