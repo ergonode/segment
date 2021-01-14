@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace Ergonode\Segment\Infrastructure\Validator;
+namespace Ergonode\Segment\Application\Validator;
 
 use Ergonode\Segment\Domain\Query\SegmentQueryInterface;
 use Ergonode\Segment\Domain\ValueObject\SegmentCode;
@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
-class UniqueSegmentCodeValidator extends ConstraintValidator
+class SegmentCodeUniqueValidator extends ConstraintValidator
 {
     private SegmentQueryInterface $query;
 
@@ -26,12 +26,12 @@ class UniqueSegmentCodeValidator extends ConstraintValidator
 
     /**
      * @param mixed                        $value
-     * @param UniqueSegmentCode|Constraint $constraint
+     * @param SegmentCodeUnique|Constraint $constraint
      */
     public function validate($value, Constraint $constraint): void
     {
-        if (!$constraint instanceof UniqueSegmentCode) {
-            throw new UnexpectedTypeException($constraint, UniqueSegmentCode::class);
+        if (!$constraint instanceof SegmentCodeUnique) {
+            throw new UnexpectedTypeException($constraint, SegmentCodeUnique::class);
         }
 
         if (null === $value || '' === $value) {
